@@ -1,0 +1,104 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Party Manager
+# during dev, should point to your local machine
+host: localhost:10010
+# basePath prefixes all resource paths 
+basePath: /
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /parties:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: party_manager
+    post:
+      description: Returns 'Hello' to the caller
+      # used as the method name of the controller
+      operationId: add
+      parameters:
+        - name: device
+          in: body
+          description: The device of the user
+          required: true
+          schema:
+            $ref: "#/definitions/Party"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/PartyResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /parties/{party_code}/participants:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: party_manager
+    post:
+      description: Returns 'Hello' to the caller
+      # used as the method name of the controller
+      operationId: join
+      parameters:
+        - name: party_code
+          in: path
+          description: The id of the party to join
+          required: true
+          type: string
+        - name: device
+          in: body
+          description: The device of the user
+          required: true
+          schema:
+            $ref: "#/definitions/Party"
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/PartyResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /swagger:
+    x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
+definitions:
+  Party:
+    required:
+      - device_id
+    properties:
+      device_id:
+        type: string
+      participant_name:
+        type: string
+  PartyResponse:
+    required:
+      - status_code
+      - party_code
+    properties:
+      status_code:
+        type: string
+      party_code:
+        type: string
+      participant_id:
+        type: integer
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
